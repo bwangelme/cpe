@@ -5,6 +5,8 @@
 #ifndef CPE_CPE1_H
 #define CPE_CPE1_H
 
-int cpe1_main();
+namespace cpe1{
+    int main();
+}
 
 #endif //CPE_CPE1_H

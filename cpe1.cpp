@@ -5,6 +5,9 @@
 #include <stdio.h>
 #include <string.h>
 
+namespace cpe1 {
+
+
 char prog[80];
 int progIndex;
 char *rwtab[6] = {"begin", "if", "then", "while", "do", "end"};
@@ -180,7 +183,7 @@ Token scanner() {
     }
 }
 
-int cpe1_main() {
+int main() {
     // for #
     // (10,for)
     char ch;
@@ -212,3 +215,5 @@ int cpe1_main() {
 
     return 0;
 }
+
+}// Namespace cpe1 End
