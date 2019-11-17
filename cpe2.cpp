@@ -56,8 +56,8 @@ int main() {
 
 // E -> T{+T | -T}
 void e() {
-    // 调用t函数
-    t();
+    char ch;
+    t(); // 调用t函数
     while ((ch == '+') || (ch == '-')) {
         // 读下一个单词或符号
         ch = prog[progIndex++];
@@ -68,8 +68,9 @@ void e() {
 
 // T -> F{*F | /F}
 void t() {
-    // 调用 f 函数
-    f();
+    char ch;
+
+    f(); // 调用 f 函数
     while ((ch == '*') || (ch == '/')) {
         // 读下一个单词符号
         ch = prog[progIndex++];
@@ -81,6 +82,8 @@ void t() {
 
 // F -> (E)|a|b|c
 void f() {
+    char ch;
+
     if (ch == 'a' || ch == 'b' || ch == 'c') {
         // 读下一个单词符号
         ch = prog[progIndex++];

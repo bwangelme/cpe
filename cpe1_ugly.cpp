@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-namespace cpe1 {
+namespace cpe1_ugly {
 
 
 char prog[80];
@@ -32,20 +32,13 @@ const int SYN_SEMICOLON = 26;
 const int SYN_LEFT_PARENTHESIS = 27;
 const int SYN_RIGHT_PARENTHESIS = 28;
 
-typedef struct Token {
-    int syn;
-    char tokenStr[8];
-    int sum;
-} Token;
+int syn, sum;
+char token[8];
 
-Token newToken(int syn, char *token, int sum) {
-    Token result;
-
-    result.syn = syn;
-    result.sum = sum;
-    strcpy(result.tokenStr, token);
-
-    return result;
+void setToken(int newSyn, char *newToken, int newSum) {
+    syn = newSyn;
+    sum = newSum;
+    strcpy(token, newToken);
 }
 
 bool CharIsLetter(char ch) {
@@ -66,7 +59,7 @@ int GetKeywordSyn(char *token) {
     return 0;
 }
 
-Token scanner() {
+void scanner() {
     char token[8], ch;
     int tokenIndex = 0, sum = 0;
 
@@ -78,7 +71,8 @@ Token scanner() {
         ch = prog[progIndex++];
 
     if (ch == 0 || ch == '#') {
-        return newToken(SYN_EXIT, "", 0);
+        setToken(SYN_EXIT, "", 0);
+        return;
     }
 
     if (CharIsLetter(ch)) {
@@ -90,9 +84,11 @@ Token scanner() {
 
         int keywordSyn = GetKeywordSyn(token);
         if (keywordSyn == 0) {
-            return newToken(SYN_VARIABLE, token, 0);
+            setToken(SYN_VARIABLE, token, 0);
+            return;
         } else {
-            return newToken(keywordSyn, token, 0);
+            setToken(keywordSyn, token, 0);
+            return;
         }
     }
 
@@ -102,7 +98,8 @@ Token scanner() {
             ch = prog[progIndex++];
         }
         progIndex--;
-        return newToken(SYN_NUM, "", sum);
+        setToken(SYN_NUM, "", sum);
+        return;
     } else {
         switch (ch) {
             case '<':
@@ -111,13 +108,16 @@ Token scanner() {
                 ch = prog[progIndex++];
                 if (ch == '>') {
                     token[tokenIndex] = ch;
-                    return newToken(SYN_LESS_GT, token, 0);
+                    setToken(SYN_LESS_GT, token, 0);
+                    return;
                 } else if (ch == '=') {
                     token[tokenIndex] = ch;
-                    return newToken(SYN_LESS_EQ, token, 0);
+                    setToken(SYN_LESS_EQ, token, 0);
+                    return;
                 } else {
                     progIndex--;
-                    return newToken(SYN_LESS, token, 0);
+                    setToken(SYN_LESS, token, 0);
+                    return;
                 }
             case '>':
                 tokenIndex = 0;
@@ -125,10 +125,12 @@ Token scanner() {
                 ch = prog[progIndex++];
                 if (ch == '=') {
                     token[tokenIndex] = ch;
-                    return newToken(SYN_GREATER_EQ, token, 0);
+                    setToken(SYN_GREATER_EQ, token, 0);
+                    return;
                 } else {
                     progIndex--;
-                    return newToken(SYN_GREATER, token, 0);
+                    setToken(SYN_GREATER, token, 0);
+                    return;
                 }
             case ':':
                 tokenIndex = 0;
@@ -136,37 +138,48 @@ Token scanner() {
                 ch = prog[progIndex++];
                 if (ch == '=') {
                     token[tokenIndex] = ch;
-                    return newToken(SYN_COLON_EQ, token, 0);
+                    setToken(SYN_COLON_EQ, token, 0);
+                    return;
                 } else {
                     progIndex--;
-                    return newToken(SYN_COLON, token, 0);
+                    setToken(SYN_COLON, token, 0);
+                    return;
                 }
             case '+':
                 token[0] = ch;
-                return newToken(SYN_PLUS, token, 0);
+                setToken(SYN_PLUS, token, 0);
+                return;
             case '-':
                 token[0] = ch;
-                return newToken(SYN_MINUS, token, 0);
+                setToken(SYN_MINUS, token, 0);
+                return;
             case '*':
                 token[0] = ch;
-                return newToken(SYN_MULTIPLY, token, 0);
+                setToken(SYN_MULTIPLY, token, 0);
+                return;
             case '/':
                 token[0] = ch;
-                return newToken(SYN_DIVISION, token, 0);
+                setToken(SYN_DIVISION, token, 0);
+                return;
             case '=':
                 token[0] = ch;
-                return newToken(SYN_EQUAL, token, 0);
+                setToken(SYN_EQUAL, token, 0);
+                return;
             case ';':
                 token[0] = ch;
-                return newToken(SYN_SEMICOLON, token, 0);
+                setToken(SYN_SEMICOLON, token, 0);
+                return;
             case '(':
                 token[0] = ch;
-                return newToken(SYN_LEFT_PARENTHESIS, token, 0);
+                setToken(SYN_LEFT_PARENTHESIS, token, 0);
+                return;
             case ')':
                 token[0] = ch;
-                return newToken(SYN_RIGHT_PARENTHESIS, token, 0);
+                setToken(SYN_RIGHT_PARENTHESIS, token, 0);
+                return;
             default:
-                return newToken(SYN_ERROR, "", 0);
+                setToken(SYN_ERROR, "", 0);
+                return;
         }
     }
 }
@@ -185,19 +198,19 @@ int main() {
     prog[progIndex] = 0;
     progIndex = 0;
     for (;;) {
-        Token result = scanner();
-        if (result.syn == SYN_EXIT) {
+        scanner();
+        if (syn == SYN_EXIT) {
             break;
         }
-        switch (result.syn) {
+        switch (syn) {
             case SYN_NUM:
-                printf("(%2d,%8d)\n", result.syn, result.sum);
+                printf("(%2d,%8d)\n", syn, sum);
                 break;
             case SYN_ERROR:
                 printf("Input Error\n");
                 break;
             default:
-                printf("(%2d,%8s)\n", result.syn, result.tokenStr);
+                printf("(%2d,%8s)\n", syn, token);
         }
     }
 
