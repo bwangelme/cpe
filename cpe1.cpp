@@ -38,7 +38,7 @@ typedef struct Token {
     int sum;
 } Token;
 
-Token makeScanResult(int syn, char *token, int sum) {
+Token newToken(int syn, char *token, int sum) {
     Token result;
 
     result.syn = syn;
@@ -48,24 +48,12 @@ Token makeScanResult(int syn, char *token, int sum) {
     return result;
 }
 
-u_int8_t CharIsLetter(char ch) {
-    if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')) {
-        return 1;
-    } else {
-        return 0;
-    }
+bool CharIsLetter(char ch) {
+    return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
 }
 
-u_int8_t CharIsDigit(char ch) {
-    if (ch >= '0' && ch <= '9') {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
-u_int8_t CharIsDigitOrLetter(char ch) {
-    return (u_int8_t) (CharIsDigit(ch) || CharIsLetter(ch));
+bool CharIsDigit(char ch) {
+    return (ch >= '0' && ch <= '9');
 }
 
 int GetKeywordSyn(char *token) {
@@ -90,11 +78,11 @@ Token scanner() {
         ch = prog[progIndex++];
 
     if (ch == 0 || ch == '#') {
-        return makeScanResult(SYN_EXIT, "", 0);
+        return newToken(SYN_EXIT, "", 0);
     }
 
     if (CharIsLetter(ch)) {
-        while (CharIsDigitOrLetter(ch)) {
+        while (CharIsDigit(ch) || CharIsLetter(ch)) {
             token[tokenIndex++] = ch;
             ch = prog[progIndex++];
         }
@@ -102,9 +90,9 @@ Token scanner() {
 
         int keywordSyn = GetKeywordSyn(token);
         if (keywordSyn == 0) {
-            return makeScanResult(SYN_VARIABLE, token, 0);
+            return newToken(SYN_VARIABLE, token, 0);
         } else {
-            return makeScanResult(keywordSyn, token, 0);
+            return newToken(keywordSyn, token, 0);
         }
     }
 
@@ -114,7 +102,7 @@ Token scanner() {
             ch = prog[progIndex++];
         }
         progIndex--;
-        return makeScanResult(SYN_NUM, "", sum);
+        return newToken(SYN_NUM, "", sum);
     } else {
         switch (ch) {
             case '<':
@@ -123,13 +111,13 @@ Token scanner() {
                 ch = prog[progIndex++];
                 if (ch == '>') {
                     token[tokenIndex] = ch;
-                    return makeScanResult(SYN_LESS_GT, token, 0);
+                    return newToken(SYN_LESS_GT, token, 0);
                 } else if (ch == '=') {
                     token[tokenIndex] = ch;
-                    return makeScanResult(SYN_LESS_EQ, token, 0);
+                    return newToken(SYN_LESS_EQ, token, 0);
                 } else {
                     progIndex--;
-                    return makeScanResult(SYN_LESS, token, 0);
+                    return newToken(SYN_LESS, token, 0);
                 }
             case '>':
                 tokenIndex = 0;
@@ -137,10 +125,10 @@ Token scanner() {
                 ch = prog[progIndex++];
                 if (ch == '=') {
                     token[tokenIndex] = ch;
-                    return makeScanResult(SYN_GREATER_EQ, token, 0);
+                    return newToken(SYN_GREATER_EQ, token, 0);
                 } else {
                     progIndex--;
-                    return makeScanResult(SYN_GREATER, token, 0);
+                    return newToken(SYN_GREATER, token, 0);
                 }
             case ':':
                 tokenIndex = 0;
@@ -148,37 +136,37 @@ Token scanner() {
                 ch = prog[progIndex++];
                 if (ch == '=') {
                     token[tokenIndex] = ch;
-                    return makeScanResult(SYN_COLON_EQ, token, 0);
+                    return newToken(SYN_COLON_EQ, token, 0);
                 } else {
                     progIndex--;
-                    return makeScanResult(SYN_COLON, token, 0);
+                    return newToken(SYN_COLON, token, 0);
                 }
             case '+':
                 token[0] = ch;
-                return makeScanResult(SYN_PLUS, token, 0);
+                return newToken(SYN_PLUS, token, 0);
             case '-':
                 token[0] = ch;
-                return makeScanResult(SYN_MINUS, token, 0);
+                return newToken(SYN_MINUS, token, 0);
             case '*':
                 token[0] = ch;
-                return makeScanResult(SYN_MULTIPLY, token, 0);
+                return newToken(SYN_MULTIPLY, token, 0);
             case '/':
                 token[0] = ch;
-                return makeScanResult(SYN_DIVISION, token, 0);
+                return newToken(SYN_DIVISION, token, 0);
             case '=':
                 token[0] = ch;
-                return makeScanResult(SYN_EQUAL, token, 0);
+                return newToken(SYN_EQUAL, token, 0);
             case ';':
                 token[0] = ch;
-                return makeScanResult(SYN_SEMICOLON, token, 0);
+                return newToken(SYN_SEMICOLON, token, 0);
             case '(':
                 token[0] = ch;
-                return makeScanResult(SYN_LEFT_PARENTHESIS, token, 0);
+                return newToken(SYN_LEFT_PARENTHESIS, token, 0);
             case ')':
                 token[0] = ch;
-                return makeScanResult(SYN_RIGHT_PARENTHESIS, token, 0);
+                return newToken(SYN_RIGHT_PARENTHESIS, token, 0);
             default:
-                return makeScanResult(SYN_ERROR, "", 0);
+                return newToken(SYN_ERROR, "", 0);
         }
     }
 }
