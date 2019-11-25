@@ -5,7 +5,7 @@
 
 int main() {
 //    cpe1::main();
-//    cpe2::main();
-    cpe1_ugly::main();
+    cpe2::main();
+//    cpe1_ugly::main();
     return 0;
 }

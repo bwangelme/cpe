@@ -12,13 +12,13 @@
 namespace cpe2 {
 
 char prog[20];  // 用户输入的字符串，用来做语法分析
+char ch; // 当前正在分析的字符
 int progIndex;  // 当前正在分析字符的索引
 int isSuccess;  // prog 是否为有效的输入字符串
 
 void e(), f(), t();
 
 void readInput() {
-    char ch;
     progIndex = 0;
     printf("Please input the source program:\n");
     do {
@@ -33,7 +33,6 @@ int main() {
     // 输入  a+b*+c#        输出   error
     // 输入  a(b)#              输出   error
     readInput();
-    char ch;
 
     progIndex = 0;
     isSuccess = 1;
@@ -56,7 +55,6 @@ int main() {
 
 // E -> T{+T | -T}
 void e() {
-    char ch;
     t(); // 调用t函数
     while ((ch == '+') || (ch == '-')) {
         // 读下一个单词或符号
@@ -68,8 +66,6 @@ void e() {
 
 // T -> F{*F | /F}
 void t() {
-    char ch;
-
     f(); // 调用 f 函数
     while ((ch == '*') || (ch == '/')) {
         // 读下一个单词符号
@@ -82,8 +78,6 @@ void t() {
 
 // F -> (E)|a|b|c
 void f() {
-    char ch;
-
     if (ch == 'a' || ch == 'b' || ch == 'c') {
         // 读下一个单词符号
         ch = prog[progIndex++];
